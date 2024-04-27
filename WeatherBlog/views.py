@@ -1,3 +1,6 @@
+from django.shortcuts import render
+
+# Create your views here.
 import requests
 from django.shortcuts import render
 
@@ -12,10 +15,7 @@ def home(request):
   data2 = reponse2.json()
   result2 = data2["message"]
 
-
-  
   return render(request, 'templates/index.html', {'result': result, 'result2': result2})
-
 
 # Install python-dotenv package to load environment variables from .env file
 # pip install python-dotenv
@@ -67,3 +67,79 @@ class WeatherView(APIView):
                 return Response({"Weather API error": str(err)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(data, status=status.HTTP_200_OK)
+
+from django.shortcuts import render, get_object_or_404
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from .models import CustomUser, blogPost, Comment
+from .forms import CustomUserForm, blogPostForm, CommentForm
+
+class blogPostListView(ListView):
+    model = blogPost
+    template_name = 'blog/home.html'  # <app>/<model>_<viewtype>.html
+    context_object_name = 'posts'
+    ordering = ['-date_posted']
+
+class blogPostDetailView(DetailView):
+    model = blogPost
+
+class blogPostCreateView(LoginRequiredMixin, CreateView):
+    model = blogPost
+    form_class = blogPostForm
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+class blogPostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = blogPost
+    form_class = blogPostForm
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+    def test_func(self):
+        post = self.get_object()
+        if self.request.user == post.author:
+            return True
+        return False
+
+class blogPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = blogPost
+    success_url = '/'
+    def test_func(self):
+        post = self.get_object()
+        if self.request.user == post.author:
+            return True
+        return False
+
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.post = get_object_or_404(blogPost, pk=self.kwargs.get('pk'))
+        return super().form_valid(form)
+
+class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Comment
+    form_class = CommentForm
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+    def test_func(self):
+        comment = self.get_object()
+        if self.request.user == comment.author:
+            return True
+        return False
+
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Comment
+    success_url = '/'
+
+    def test_func(self):
+        comment = self.get_object()
+        if self.request.user == comment.author:
+            return True
+        return False
