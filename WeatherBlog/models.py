@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.text import slugify
 from PIL import Image, ImageOps
+from django.contrib.auth.models import Group, Permission
+from django.utils.translation import gettext_lazy as _
 
 class CustomUserManager(models.Manager):
     def create_user(self, username, email=None, password=None):
@@ -23,6 +25,34 @@ class CustomUser(AbstractUser):
     bio = models.TextField(max_length=500, blank=True)
     location = models.CharField(max_length=30, blank=True)
     profile_pic = models.ImageField(upload_to='profile_pics', blank=True)
+
+    groups = models.ManyToManyField(
+        Group,
+        verbose_name=_('groups'),
+        blank=True,
+        related_name='custom_users',
+        related_query_name='custom_user',
+        help_text=_(
+            'The groups this user belongs to. A user will get all permissions '
+            'granted to each of their groups.'
+        ),
+    )
+    user_permissions = models.ManyToManyField(
+        Permission,
+        verbose_name=_('user permissions'),
+        blank=True,
+        related_name='custom_users',
+        related_query_name='custom_user',
+        help_text=_('Specific permissions for this user.'),
+    )
+
+    objects = CustomUserManager()
+
+    def __str__(self):
+        return self.username or self.email
+
+    class Meta(AbstractUser.Meta):
+        swappable = 'AUTH_USER_MODEL'
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -50,23 +80,8 @@ class CustomUser(AbstractUser):
 
         # Save the result image replacing the original image
         result.save(self.profile_pic.path)
-    
-    objects = CustomUserManager()
-    
-    def __str__(self):
-        return self.username or self.email
-    class Meta:
-        permissions = [
-            ("view_blogpost", "Can view blog post"),
-            ("add_blogpost", "Can add blog post"),
-            ("change_blogpost", "Can change blog post"),
-            ("delete_blogpost", "Can delete blog post"),
-        ]
-    
-    
 
-
-
+    
 class blogPost(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
@@ -121,12 +136,14 @@ class blogPost(models.Model):
 
 
 class Comment(models.Model):
-    blog_post = models.ForeignKey(blogPost, on_delete=models.CASCADE)
+    blog_post = models.ForeignKey(blogPost, on_delete=models.CASCADE, related_name='blogpost_comments')
     content = models.TextField()
     date_posted = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
-    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    post = models.ForeignKey(blogPost, on_delete=models.CASCADE)
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_comments')
+    post = models.ForeignKey(blogPost, on_delete=models.CASCADE, related_name='post_comments')
     
     def __str__(self):
         return self.content
+
+
