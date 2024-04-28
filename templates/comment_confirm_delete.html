@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Comment{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        /* Form container */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        /* Confirmation message */
+        .confirmation-message {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        /* Action buttons */
+        .btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: #fff;
+            border: none;
+            margin-right: 10px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Delete Comment</h2>
+    <p class="confirmation-message">Are you sure you want to delete the comment "{{ object.content }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="{% url 'blogpost-detail' object.post.pk %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

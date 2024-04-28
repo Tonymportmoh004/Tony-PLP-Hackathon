@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Blog App{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}" />
+    {% block stylesheets %}
+    <style>
+        /* Add your custom CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        nav {
+            background-color: #343a40;
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav__logo {
+            font-size: 1.5rem;
+        }
+        .nav__links {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+        }
+        .nav__links .link a {
+            color: #fff;
+            text-decoration: none;
+        }
+        .nav__links .link a:hover {
+            text-decoration: underline;
+        }
+        .btn {
+            padding: 8px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .footer {
+            background-color: #343a40;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        .footer__container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+        }
+        .footer__col {
+            flex: 1;
+            margin-right: 20px;
+        }
+        .footer__col h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        .footer__col p {
+            margin-bottom: 10px;
+        }
+        .footer__bar {
+            background-color: #212529;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .footer__bar p {
+            margin: 0;
+        }
+        .socials span {
+            margin-right: 10px;
+        }
+        .socials span i {
+            font-size: 1.5rem;
+            color: #fff;
+            cursor: pointer;
+        }
+    </style>
+    {% endblock %}
+</head>
+
+<body>
+    <nav>
+        <div class="nav__logo">Blog App</div>
+        <ul class="nav__links">
+            <li class="link"><a href="{% url 'home' %}">Home</a></li>
+            <li class="link"><a href="{% url 'blog-post-list' %}">Blog</a></li>
+            <!-- Add more navbar links as needed -->
+        </ul>
+        {% if user.is_authenticated %}
+        <a href="{% url 'logout' %}" class="btn">Logout</a>
+        {% else %}
+        <a href="{% url 'login' %}" class="btn">Login</a>
+        <a href="{% url 'signup' %}" class="btn">Sign Up</a>
+        {% endif %}
+    </nav>
+
+    {% block content %}{% endblock %}
+
+    <footer class="footer">
+        <div class="section__container footer__container">
+            <div class="footer__col">
+                <h3>Blog App</h3>
+                <p>
+                    Welcome to Blog App, where you can explore and share your thoughts with the world.
+                </p>
+                <p>
+                    Follow us on social media for updates and announcements.
+                </p>
+            </div>
+            <div class="footer__col">
+                <h4>Navigation</h4>
+                <p class="link"><a href="{% url 'home' %}">Home</a></p>
+                <p class="link"><a href="{% url 'blog-post-list' %}">Blog</a></p>
+                <!-- Add more footer links as needed -->
+            </div>
+        </div>
+        <div class="section__container footer__bar">
+            <p>&copy; 2024 Blog App. All rights reserved.</p>
+            <div class="socials">
+                <span><i class="ri-facebook-fill"></i></span>
+                <span><i class="ri-twitter-fill"></i></span>
+                <span><i class="ri-instagram-line"></i></span>
+                <span><i class="ri-youtube-fill"></i></span>
+            </div>
+        </div>
+    </footer>
+
+    {% block javascripts %}{% endblock %}
+</body>
+
+</html>

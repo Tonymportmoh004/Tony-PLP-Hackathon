@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}Blog Post Detail{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        /* Container for the post */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Individual blog post */
+        .post {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+
+        /* Blog post image */
+        .post__image {
+            width: 100%;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        /* Blog post content */
+        .post__content {
+            padding: 20px;
+        }
+
+        .post__title {
+            font-size: 24px;
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .post__author, .post__date {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .post__text {
+            font-size: 18px;
+            line-height: 1.5;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        /* Like button */
+        .like-btn {
+            cursor: pointer;
+            color: #888;
+            margin-right: 10px;
+        }
+
+        .like-btn:hover {
+            color: #ff3a3a;
+        }
+
+        /* Comment section */
+        .comment-section {
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+
+        .comment {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+        }
+
+        .comment__author {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .comment__content {
+            font-size: 16px;
+            color: #555;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="feed">
+        <!-- Individual blog post -->
+        <div class="post">
+            <img src="{{ post.photo.url }}" alt="{{ post.title }}" class="post__image">
+            <div class="post__content">
+                <h2 class="post__title">{{ post.title }}</h2>
+                <p class="post__author">Author: {{ post.author.username }}</p>
+                <p class="post__date">Date Posted: {{ post.date_posted }}</p>
+                <p class="post__text">{{ post.content }}</p>
+                <!-- Like button -->
+                <span class="like-btn">Like</span>
+                <!-- Add more post details if needed -->
+            </div>
+            <!-- Comment section -->
+            <div class="comment-section">
+                <h3>Comments</h3>
+                {% for comment in post.comment_set.all %}
+                <div class="comment">
+                    <p class="comment__author">{{ comment.author.username }}</p>
+                    <p class="comment__content">{{ comment.content }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
